@@ -157,9 +157,17 @@ class RSAAttack(object):
         # 不需要解密，直接返回
         if not self.c:
             return
-        self.plain = pow(self.c, self.d, self.n)
+        # 是否多行密文需要拼接
+        output = ""
+        if isinstance(self.data['c'], list):
+            for charc in self.data['c']:
+                self.plain = pow(charc, self.d, self.n)
+                output += libnum.n2s(self.plain)
+        else:
+            self.plain = pow(self.c, self.d, self.n)
+            output = libnum.n2s(self.plain)
         # 打印解密出来的明文
-        log.info(libnum.n2s(self.plain))
+        log.info(output)
 
 
 # d泄露攻击，根据过期的(N，e1，d1)，和一个新的e2，返回d2
